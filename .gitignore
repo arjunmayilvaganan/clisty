@@ -8,6 +8,9 @@
 *.so
 *.dylib
 
+# Main binary for the program
+clisty
+
 # Test binary, built with `go test -c`
 *.test
 
