@@ -3,14 +3,24 @@ package main
 import (
 	"flag"
 	"fmt"
+	"slices"
 )
 
 func main() {
-	cmd := flag.String("cmd", "", "The default command supplied to the executable")
+	validCmds := []string{"add", "list", "done"}
 	flag.Parse()
-	if *cmd != "" {
-		fmt.Println(*cmd)
-	} else {
-		fmt.Println("Nothing was entered!")
+	args := flag.Args()
+	if len(args) == 0 {
+		fmt.Println("You need to provide a command")
+		fmt.Println("The valid commands accepted are: ", validCmds)
+		return
 	}
+
+	if !slices.Contains(validCmds, args[0]) {
+		fmt.Println("Provided command is not valid")
+		fmt.Println("The valid commands accepted are: ", validCmds)
+		return
+	}
+
+	fmt.Println(args[0])
 }
