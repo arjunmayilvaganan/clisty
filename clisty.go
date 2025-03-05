@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"os"
 	"slices"
@@ -13,6 +12,7 @@ const (
 	Add                  = "add"
 	List                 = "list"
 	Done                 = "done"
+	Help                 = "help"
 	DefaultStoreFilePath = "store.json"
 	Capacity             = 10000
 )
@@ -39,7 +39,6 @@ type Store struct {
 }
 
 func (s *Store) addItem(item Item) {
-	fmt.Println(s.Items)
 	if s.Capacity < s.TotalLength+1 {
 		fmt.Println("The store is already at maximum capacity")
 		return
@@ -114,20 +113,27 @@ func shutdown(storeFilePath string) {
 	}
 }
 
+func displayHelp() {
+	fmt.Println("Usage: clisty [OPTIONS]")
+	fmt.Println("Options:")
+	fmt.Println("  clisty add \"<To-do item description goes here>\"\t-- To add a new item to the list")
+	fmt.Println("  clisty done \"<ID of the item to be marked done>\"\t-- To mark that item as done")
+	fmt.Println("  clisty list\t\t\t\t\t\t-- Prints all pending items from the list")
+	fmt.Println("  clisty list all\t\t\t\t\t-- Prints both pending and completed items from the list")
+	fmt.Println("  clisty help\t\t\t\t\t\t-- Prints this usage guide again")
+}
+
 func main() {
 	initialize(DefaultStoreFilePath)
-	validCmds := []string{Add, List, Done}
-	flag.Parse()
-	args := flag.Args()
-	if len(args) == 0 {
-		fmt.Println("You need to provide a command")
-		fmt.Println("The valid commands accepted are: ", validCmds)
+	validCmds := []string{Add, List, Done, Help}
+	args := os.Args[1:]
+	if len(args) < 1 {
+		displayHelp()
 		return
 	}
 
 	if !slices.Contains(validCmds, args[0]) {
-		fmt.Println("Provided command is not valid")
-		fmt.Println("The valid commands accepted are: ", validCmds)
+		displayHelp()
 		return
 	}
 
@@ -136,10 +142,13 @@ func main() {
 		item := parseAddArgs(args[1:])
 		store.addItem(item)
 	case List:
-		store.listCompletedItems()
+		listAllItems := len(args) > 1 && args[1] == "all"
+		store.listItems(listAllItems)
 	case Done:
 		item := parseDoneArgs(args[1:])
 		store.markDone(item)
+	case Help:
+		displayHelp()
 	}
 	shutdown(DefaultStoreFilePath)
 }
