@@ -11,6 +11,9 @@
 # Main binary for the program
 clisty
 
+# Local backup
+store.json
+
 # Test binary, built with `go test -c`
 *.test
 
