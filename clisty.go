@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"slices"
 	"strconv"
@@ -86,7 +87,7 @@ func parseAddArgs(args []string) Item {
 func parseDoneArgs(args []string) Item {
 	id, err := strconv.ParseUint(args[0], 10, 64)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 	return Item{Id: id}
 }
@@ -94,7 +95,7 @@ func parseDoneArgs(args []string) Item {
 func initialize(storeFilePath string) {
 	storeData, err := os.ReadFile(storeFilePath)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 	config = Configuration{StoreFilePath: storeFilePath}
 	json.Unmarshal(storeData, &store)
@@ -104,12 +105,12 @@ func initialize(storeFilePath string) {
 func shutdown(storeFilePath string) {
 	storeData, err := json.Marshal(store)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	err = os.WriteFile(storeFilePath, storeData, 0644)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 }
 
